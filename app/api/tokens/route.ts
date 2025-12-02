@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createTokenSchema, getTokensSchema } from '@/lib/schemas'
-import {
-    handleApiError,
-    isValidApiKey,
-    unauthorizedResponse,
-} from '@/lib/api-utils'
+import { handleApiError, isValidApiKey, unauthorizedResponse } from './utils'
 import { getActiveTokens, createToken } from './utils'
 
 import type { Token, ApiErrorResponse, CreateToken } from '@/lib/types'
