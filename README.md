@@ -1,36 +1,163 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Token Management Service
 
-## Getting Started
+A minimal Next.js service for managing user access tokens with scopes and expiration.
 
-First, run the development server:
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Copy environment file
+mv .env.example .env
+
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` to access the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application follows a clean separation between client and server, with shared types and validations:
 
-## Learn More
+```mermaid
+graph TB
+    subgraph Client["Client"]
+        AddToken["add token"]
+        ListTokens["list tokens"]
+    end
+    
+    subgraph QueryLayer["TanStack Query"]
+        TQ[TANSTACK QUERY]
+    end
+    
+    subgraph Server["Server"]
+        POST["POST: add token"]
+        GET["GET: get tokens submit"]
+    end
+    
+    subgraph Shared["Shared Resources"]
+        Validations["validations"]
+        Types["types"]
+    end
+    
+    AddToken -->|mutate| TQ
+    TQ -->|request| POST
+    GET -->|response| TQ
+    TQ -->|data| ListTokens
+    
+    Client -.->|uses| Types
+    Client -.->|uses| Validations
+    Server -.->|uses| Types
+    Server -.->|uses| Validations
+```
 
-To learn more about Next.js, take a look at the following resources:
+**Key Components:**
+- **Client**: React components with form validation
+- **TanStack Query**: Data fetching and state management
+- **Server**: Next.js API routes with in-memory storage
+- **Shared**: Common types and Zod validation schemas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### POST /api/tokens
 
-## Deploy on Vercel
+Create a new token for a user.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Request:**
+```bash
+curl -X POST http://localhost:3000/api/tokens \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your_api_key_here" \
+  -d '{
+    "userId": "123",
+    "scopes": ["read", "write"],
+    "expiresInMinutes": 60
+  }'
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Response:**
+```json
+{
+  "id": "uuid-here",
+  "userId": "123",
+  "scopes": ["read", "write"],
+  "createdAt": "2025-01-01T10:00:00.000Z",
+  "expiresAt": "2025-01-01T11:00:00.000Z",
+  "token": "uuid-here"
+}
+```
+
+### GET /api/tokens?userId=123
+
+Returns array of non-expired tokens for a user.
+
+**Request:**
+```bash
+curl http://localhost:3000/api/tokens?userId=123 \
+  -H "X-API-Key: your_api_key_here"
+```
+
+**Response:**
+```json
+[
+  {
+    "id": "uuid-here",
+    "userId": "123",
+    "scopes": ["read", "write"],
+    "createdAt": "2025-01-01T10:00:00.000Z",
+    "expiresAt": "2025-01-01T11:00:00.000Z",
+    "token": "uuid-here"
+  }
+]
+```
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Validation**: Zod schemas (shared frontend/backend)
+- **State Management**: TanStack Query
+- **Storage**: In-memory (Map-based, O(1) lookup)
+- **Testing**: Jest
+- **UI**: React Hook Form, Radix UI, Tailwind CSS
+
+## Testing
+
+```bash
+npm test
+```
+
+Tests are located next to implementation files (e.g., `app/api/tokens/utils/getActiveTokens.test.ts`).
+
+## Implementation Details
+
+### Core Features
+
+✅ Full TypeScript with strict types  
+✅ Zod validation for all inputs  
+✅ Proper HTTP status codes (201, 400, 401, 500)  
+✅ API key authentication  
+✅ Frontend UI with form validation  
+✅ Unit tests for token expiry logic  
+
+### Assumptions & Simplifications
+
+**Storage**
+- In-memory Map storage (data lost on server restart)
+- Optimized with O(1) user-token lookup via indexed mapping
+
+**Validation**
+- Scopes restricted to `['read', 'write']` (not arbitrary strings)
+- User ID max length: 100 characters
+- Expiry max: 1 year (525,600 minutes)
+
+**Format**
+- Token IDs use UUID format (not `token_abc123` format from examples)
+
+**Simplifications**
+- No Dockerfile included
+- 500ms API delay for demo purposes (loading states)
+- Single schema reused for frontend forms and backend API

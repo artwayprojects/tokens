@@ -1,26 +1,490 @@
 @import "tailwindcss";
 
+/* ========================================
+   CYBERPUNK DESIGN SYSTEM
+   ======================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core backgrounds */
+  --background: #0a0d14;
+  --background-secondary: #0f1219;
+  --foreground: #e4e8f1;
+  
+  /* Card surfaces */
+  --card: rgba(15, 20, 30, 0.8);
+  --card-foreground: #e4e8f1;
+  
+  /* Primary - Electric Cyan */
+  --primary: #00f0ff;
+  --primary-foreground: #0a0d14;
+  --primary-glow: rgba(0, 240, 255, 0.4);
+  --primary-muted: rgba(0, 240, 255, 0.15);
+  
+  /* Secondary/Accent - Neon Magenta */
+  --accent: #ff00aa;
+  --accent-foreground: #0a0d14;
+  --accent-glow: rgba(255, 0, 170, 0.4);
+  --accent-muted: rgba(255, 0, 170, 0.15);
+  
+  /* Success - Bright Green */
+  --success: #00ff88;
+  --success-glow: rgba(0, 255, 136, 0.4);
+  --success-muted: rgba(0, 255, 136, 0.15);
+  
+  /* Error/Destructive - Hot Pink */
+  --error: #ff3366;
+  --destructive: #ff3366;
+  --destructive-foreground: #ffffff;
+  --error-glow: rgba(255, 51, 102, 0.4);
+  --error-muted: rgba(255, 51, 102, 0.15);
+  
+  /* Borders & Lines */ 
+  --border: rgba(0, 240, 255, 0.15);
+  --border-hover: rgba(0, 240, 255, 0.3);
+  --input: rgba(0, 240, 255, 0.2);
+  
+  /* Text colors */
+  --muted: #6b7a99;
+  --muted-foreground: #8896b3;
+  
+  /* Ring for focus states */
+  --ring: #00f0ff;
+  
+  /* Secondary for UI elements */
+  --secondary: rgba(0, 240, 255, 0.1);
+  --secondary-foreground: #00f0ff;
 }
 
+/* Theme inline for Tailwind v4 */
 @theme inline {
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
+  --color-primary-muted: var(--primary-muted);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-glow: var(--accent-glow);
+  --color-accent-muted: var(--accent-muted);
+  
+  --color-success: var(--success);
+  --color-success-glow: var(--success-glow);
+  --color-success-muted: var(--success-muted);
+  
+  --color-error: var(--error);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-error-glow: var(--error-glow);
+  --color-error-muted: var(--error-muted);
+  
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+  --color-input: var(--input);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-ring: var(--ring);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ========================================
+   BASE STYLES
+   ======================================== */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+/* Glow pulse for status indicators */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 4px var(--success),
+                0 0 8px var(--success-glow),
+                0 0 16px var(--success-glow);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 8px var(--success),
+                0 0 16px var(--success-glow),
+                0 0 32px var(--success-glow);
+    opacity: 0.8;
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--primary-muted) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Border glow animation */
+@keyframes border-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--primary-glow),
+                inset 0 0 5px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--primary-glow),
+                inset 0 0 10px var(--primary-glow);
+  }
+}
+
+.animate-border-glow {
+  animation: border-glow 3s ease-in-out infinite;
+}
+
+/* Subtle float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ========================================
+   CYBERPUNK GRID BACKGROUND
+   ======================================== */
+
+.grid-bg {
+  position: relative;
+  background: var(--background);
+}
+
+.grid-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    /* Radial gradient overlay for depth */
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(0, 240, 255, 0.03) 0%,
+      transparent 50%
+    ),
+    /* Perspective grid lines - horizontal */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 59px,
+      rgba(0, 240, 255, 0.03) 59px,
+      rgba(0, 240, 255, 0.03) 60px
+    ),
+    /* Perspective grid lines - vertical */
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 59px,
+      rgba(0, 240, 255, 0.03) 59px,
+      rgba(0, 240, 255, 0.03) 60px
+    );
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    transparent 100%
+  );
+}
+
+/* Add subtle scan line effect */
+.grid-bg::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ========================================
+   GLASS EFFECT UTILITIES
+   ======================================== */
+
+.glass {
+  background: rgba(15, 20, 30, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-strong {
+  background: rgba(15, 20, 30, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ========================================
+   GLOW EFFECTS
+   ======================================== */
+
+.glow-cyan {
+  box-shadow: 0 0 20px var(--primary-glow),
+              0 0 40px rgba(0, 240, 255, 0.1);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px var(--accent-glow),
+              0 0 40px rgba(255, 0, 170, 0.1);
+}
+
+.glow-magenta-sm {
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px var(--success-glow),
+              0 0 40px rgba(0, 255, 136, 0.1);
+}
+
+.glow-pink {
+  box-shadow: 0 0 20px var(--error-glow),
+              0 0 40px rgba(255, 51, 102, 0.1);
+}
+
+/* Hover glow transitions */
+.hover-glow-cyan {
+  transition: box-shadow 0.3s ease;
+}
+.hover-glow-cyan:hover {
+  box-shadow: 0 0 25px var(--primary-glow),
+              0 0 50px rgba(0, 240, 255, 0.15);
+}
+
+.hover-glow-magenta {
+  transition: box-shadow 0.3s ease;
+}
+.hover-glow-magenta:hover {
+  box-shadow: 0 0 25px var(--accent-glow),
+              0 0 50px rgba(255, 0, 170, 0.15);
+}
+
+/* ========================================
+   GRADIENT UTILITIES
+   ======================================== */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-cyan-magenta {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+}
+
+.gradient-cyan {
+  background: linear-gradient(135deg, var(--primary) 0%, #0088aa 100%);
+}
+
+.gradient-magenta {
+  background: linear-gradient(135deg, var(--accent) 0%, #aa0066 100%);
+}
+
+/* ========================================
+   NEON BORDER UTILITIES
+   ======================================== */
+
+.neon-border-cyan {
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow),
+              inset 0 0 10px rgba(0, 240, 255, 0.05);
+}
+
+.neon-border-magenta {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow),
+              inset 0 0 10px rgba(255, 0, 170, 0.05);
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+
+.cyber-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.cyber-card:hover {
+  border-color: var(--border-hover);
+}
+
+.cyber-card-cyan {
+  background: var(--card);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.05),
+              inset 0 1px 0 rgba(0, 240, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cyber-card-cyan:hover {
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.1),
+              inset 0 1px 0 rgba(0, 240, 255, 0.2);
+}
+
+.cyber-card-magenta {
+  background: var(--card);
+  border: 1px solid rgba(255, 0, 170, 0.2);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(255, 0, 170, 0.05),
+              inset 0 1px 0 rgba(255, 0, 170, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cyber-card-magenta:hover {
+  border-color: rgba(255, 0, 170, 0.4);
+  box-shadow: 0 0 40px rgba(255, 0, 170, 0.1),
+              inset 0 1px 0 rgba(255, 0, 170, 0.2);
+}
+
+/* ========================================
+   BUTTON ENHANCEMENTS
+   ======================================== */
+
+.cyber-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cyber-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.cyber-btn:hover::before {
+  transform: translateX(100%);
+}
+
+/* ========================================
+   INPUT ENHANCEMENTS
+   ======================================== */
+
+.cyber-input {
+  background: rgba(10, 13, 20, 0.8);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.cyber-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-muted),
+              0 0 20px var(--primary-glow);
+  outline: none;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.5);
+}
+
+/* ========================================
+   SELECTION STYLING
+   ======================================== */
+
+::selection {
+  background: var(--primary-muted);
+  color: var(--foreground);
+}
+
+::-moz-selection {
+  background: var(--primary-muted);
+  color: var(--foreground);
 }
