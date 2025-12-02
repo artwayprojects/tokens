@@ -43,15 +43,15 @@ graph TB
         Types["types"]
     end
     
-    AddToken -->|mutate| TQ
-    TQ -->|request| POST
-    GET -->|response| TQ
-    TQ -->|data| ListTokens
+    AddToken --> TQ
+    TQ --> POST
+    GET --> TQ
+    TQ --> ListTokens
     
-    Client -.->|uses| Types
-    Client -.->|uses| Validations
-    Server -.->|uses| Types
-    Server -.->|uses| Validations
+    Client -.-> Types
+    Client -.-> Validations
+    Server -.-> Types
+    Server -.-> Validations
 ```
 
 **Key Components:**
